@@ -14,7 +14,7 @@ db = TinyDB('db.json')
 
 @mcp.tool()
 def insert_data(data:dict) -> str:
-    f"""
+    """
     Insert a single document into the database.
 
     Args:
@@ -27,7 +27,7 @@ def insert_data(data:dict) -> str:
     ```json
     {
         "name": "John Doe",
-        "age": 30,
+        "age": 30
     }
     ```
     """
