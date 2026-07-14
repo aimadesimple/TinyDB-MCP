@@ -70,20 +70,47 @@ if __name__ == "__main__":
     mcp.run(transport='sreammable-http')
 ```
 
+## Step 5: Add the tools, resources and prompts to the MCP
+
+In this step you add the tools, resources and prompts required to accomplish the goal.
+
+
 ## Step 6: Publish the Repository to GitHub
 
-Use the GitHub CLI (`gh`) to authenticate, create the public repository, and
-open it in a browser after the local Git repository has been initialized and
-the initial commit has been created.
+Use Git to initialize and commit the project, then use the GitHub CLI (`gh`)
+to authenticate, create the public repository, push the initial commit, and
+verify the result. Run these commands from the project root.
 
 ```bash
+# Initialize the local repository and create the initial commit
+git init -b main
+git add AGENTS.md NOTES.md .gitignore pyproject.toml tinydb_remote_server.py uv.lock
+git status --short
+git diff --cached --check
+git commit -m "Initial TinyDB MCP server"
+
+# Authenticate GitHub CLI in a browser and confirm the active account
 gh auth login --hostname github.com --web --git-protocol https
 gh auth status
+
+# Create the public repository, configure origin, and push main
 gh repo create AIMadeSimple/TinyDB-MCP --public --source=. --remote=origin --push
-gh repo view AIMadeSimple/TinyDB-MCP --web
+
+# Confirm the repository settings and local remote
+gh repo view AIMadeSimple/TinyDB-MCP --json nameWithOwner,visibility,defaultBranchRef,url
+git remote -v
+```
+
+For later changes, stage the intended files, create a focused commit, and push
+the current `main` branch to GitHub:
+
+```bash
+git add NOTES.md
+git commit -m "Update publishing notes"
+git push -u origin main
 ```
 
 The `gh repo create` command creates the repository under the `AIMadeSimple`
 organization, configures it as the local `origin` remote, and pushes the
-current branch. Run it from the project root after committing the intended
-source files.
+current `main` branch. The explicit `git add` list avoids committing local
+environment files or the runtime TinyDB database.
