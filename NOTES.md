@@ -6,6 +6,7 @@ author: Saurabh Lal
 
 This `NOTES.md` file contains rough notes on this project. Other documents like `SETUP.md`, `GUIDE.md`, and `README.md` files can be created with the help of `NOTES.md`.
 
+
 # Steps to create the TinyDB Remote MCP server
 
 ## Step 1: Initialise the Project
@@ -173,6 +174,17 @@ manually. `--frozen` installs/runs exactly the locked dependencies, while
 `--ci` removes uv's cache after the build. Render redeploys automatically
 after later pushes to `main`.
 
+### Ignore Markdown-only changes
+
+To avoid a deployment when a commit changes only Markdown files:
+
+1. Open the Render service and select **Settings**.
+2. Under **Build & Deploy**, find **Build Filters** and click **Edit**.
+3. Add `**/*.md` as an **Ignored Path** and save the changes.
+
+A commit that changes only `.md` files will not deploy; a commit that also
+changes application files will still trigger a deployment.
+
 TinyDB writes to `db.json` on the service filesystem. On a Free service this
 data is ephemeral and can be lost after a restart or redeploy. This server is
 also public and currently unauthenticated, so do not store sensitive data.
@@ -197,3 +209,16 @@ To list the available tools without the Inspector UI, use its CLI mode:
 ```bash
 npx @modelcontextprotocol/inspector --cli https://<render-service-name>.onrender.com/mcp --transport http --method tools/list
 ```
+
+## Step 9: Connect MCP to OpenAI Web App
+
+1. In ChatGPT, open **Settings > Security and login** and enable **Developer mode**.
+2. Open **Settings > Plugins** or visit `https://chatgpt.com/plugins`.
+3. Click **+** (plus) to create an app, then enter:
+   - **Name:** `TinyDB MCP`
+   - **Description:** `Store, retrieve, and clear TinyDB records.`
+   - **MCP server URL:** `https://<your-render-service>.onrender.com/mcp`
+4. Click **Create** and confirm ChatGPT shows `insert_data`, `get_all_data`, and `delete_all_data`.
+5. In a separate ChatGPT project, click **+ > More**, select the app, and test inserting or retrieving data.
+
+Use test data only: this server is public and unauthenticated.

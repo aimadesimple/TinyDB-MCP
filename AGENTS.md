@@ -1,30 +1,54 @@
 # Repository Guidelines
 
-## Project Structure & Module Organization
+## Project Structure
 
-This Python MCP server uses `tinydb_remote_server.py` as its entry point; it creates the FastMCP server, opens TinyDB, and declares exposed tools. Dependencies and Python metadata live in `pyproject.toml`; locked versions are in `uv.lock`. `NOTES.md` holds setup notes. Runtime data is written to root-level `db.json`—treat it as local state, not source code. There is no `tests/` directory yet; add tests there as the server grows.
+`tinydb_remote_server.py` is the application entry point. It configures the
+FastMCP Streamable HTTP server and defines the TinyDB-backed MCP tools.
+Project metadata and runtime dependencies are in `pyproject.toml`; `uv.lock`
+must stay synchronized with them. `NOTES.md` documents setup, GitHub
+publishing, Render deployment, and MCP Inspector use. TinyDB writes local
+runtime state to `db.json`, which is intentionally ignored by Git. Add future
+automated tests under `tests/`.
 
-## Build, Test, and Development Commands
+## Development Commands
 
-- `uv sync` installs the locked project dependencies into the local virtual environment.
-- `uv run python tinydb_remote_server.py` starts the FastMCP server using its streamable HTTP transport.
-- `uv run python -m compileall tinydb_remote_server.py` performs a quick syntax check.
-- `uv run pytest` runs the test suite after tests are added. Add `pytest` as a development dependency before relying on this command.
+- `uv sync` installs the locked dependencies into the project environment.
+- `uv run --frozen python tinydb_remote_server.py` starts the server. Locally,
+  it listens on `0.0.0.0:10000` unless `PORT` is set.
+- `uv run --frozen python -m py_compile tinydb_remote_server.py` checks Python
+  syntax without starting the server.
+- `uv run pytest` runs tests once `pytest` is added as a development dependency.
 
-Use `uv add <package>` to introduce a runtime dependency so that both `pyproject.toml` and `uv.lock` stay current.
+Use `uv add <package>` for runtime dependencies so both `pyproject.toml` and
+`uv.lock` are updated together. Do not hand-edit `uv.lock`.
 
-## Coding Style & Naming Conventions
+## Code Style and MCP Tools
 
-Use Python 3.13+, four-space indentation, standard-library import ordering, and type annotations for tool inputs and returns. Follow PEP 8 naming: `snake_case` for functions and variables, `PascalCase` for classes, and verb-led tool names such as `insert_data` or `delete_all_data`. Keep MCP tool docstrings concise and document arguments, returns, and persistent side effects. Avoid changing the server transport or `db.json` location without documenting migration implications.
+Target Python 3.13+, four-space indentation, standard import grouping, and
+type annotations for tool parameters and return values. Use `snake_case` and
+verb-led tool names, for example `insert_data` and `delete_all_data`. Give each
+`@mcp.tool()` a short docstring describing inputs, output, and side effects.
+Keep the public HTTP configuration intact: bind to `0.0.0.0` and read the port
+from `PORT`, with `10000` only as a local fallback.
 
-## Testing Guidelines
+## Testing
 
-Write `pytest` tests in `tests/` with names such as `test_insert_data_returns_success`. Isolate database state with a temporary TinyDB path or fixture; tests must not depend on or mutate the root `db.json`. Cover successful operations and empty-database behavior for every MCP tool. Run the full suite with `uv run pytest` before opening a change.
+Write `pytest` tests named `test_<behavior>.py` or `test_<behavior>()`, such as
+`test_insert_data_returns_success`. Use a temporary TinyDB file or fixture;
+tests must never read or modify root-level `db.json`. Cover successful calls,
+empty-database behavior, and destructive operations.
 
-## Commit & Pull Request Guidelines
+## Commits, Pull Requests, and Deployment
 
-No Git history is available in this checkout, so no repository-specific convention can be inferred. Use short, imperative commit subjects, for example `Add validation for inserted records`. Keep commits focused. Pull requests should explain the behavior change, list verification commands and outcomes, link relevant issues, and call out any data-format or configuration changes. Include request/response examples when modifying an MCP tool interface.
+Recent commits use short, imperative subjects, such as `Configure Render`
+and `Fixed insert_data tool description`. Keep commits focused and include
+validation in the PR description; link issues and include MCP request/response
+examples when an interface changes. The public GitHub remote is
+`AIMadeSimple/TinyDB-MCP`; push reviewed changes to `main` with `git push`.
+Render deploys from `main` using the commands documented in `NOTES.md`.
 
-## Security & Configuration
+## Security and Data
 
-Do not commit real database contents, secrets, or environment-specific configuration. Validate untrusted tool input before using it in future storage or query features, and preserve backward compatibility for existing TinyDB documents.
+Never commit `.env` files, credentials, or `db.json`. The current Render
+service is public and unauthenticated, and its Free-tier filesystem is
+ephemeral. Do not store sensitive or durable production data there.
