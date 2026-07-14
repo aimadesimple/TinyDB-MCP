@@ -106,9 +106,33 @@ the current `main` branch to GitHub:
 
 ```bash
 git add NOTES.md
-git commit -m "Update publishing notes"
+git commit -m "Update NOTES.md"
 git push -u origin main
 ```
+
+### CLI flag reference
+
+- `git init -b main`: `-b` sets the initial branch name to `main` instead of
+  Git's configured default.
+- `git status --short`: `--short` prints a compact, one-line status for each
+  changed file.
+- `git diff --cached --check`: `--cached` compares the staged files with the
+  last commit; `--check` reports whitespace errors without changing files.
+- `git commit -m "..."`: `-m` supplies the commit message directly on the
+  command line.
+- `git remote -v`: `-v` shows the fetch and push URLs for each remote.
+- `git push -u origin main`: `-u` (also `--set-upstream`) makes
+  `origin/main` the upstream for the local `main` branch, enabling later
+  `git push` and `git pull` commands without specifying the remote and branch.
+- `gh auth login --hostname github.com --web --git-protocol https`:
+  `--hostname` chooses GitHub.com, `--web` opens browser-based authentication,
+  and `--git-protocol` selects HTTPS for Git remotes.
+- `gh repo create ... --public --source=. --remote=origin --push`:
+  `--public` sets repository visibility, `--source=.` uses the current
+  directory, `--remote=origin` names the created Git remote, and `--push`
+  pushes the current branch after creating the repository.
+- `gh repo view ... --json nameWithOwner,visibility,defaultBranchRef,url`:
+  `--json` limits the output to the listed repository fields in JSON format.
 
 The `gh repo create` command creates the repository under the `AIMadeSimple`
 organization, configures it as the local `origin` remote, and pushes the
