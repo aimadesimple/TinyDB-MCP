@@ -222,3 +222,107 @@ npx @modelcontextprotocol/inspector --cli https://<render-service-name>.onrender
 5. In a separate ChatGPT project, click **+ > More**, select the app, and test inserting or retrieving data.
 
 Use test data only: this server is public and unauthenticated.
+
+
+# FAQs
+
+## When creating a Python project, should I create a virtual environment first or run `uv init` first?
+
+Run `uv init` first for a new Python project.
+
+Typical flow:
+
+```bash
+mkdir my-project
+cd my-project
+uv init
+uv add requests
+uv run python main.py
+```
+
+`uv init` creates the project structure and `pyproject.toml`. After that, `uv add` or `uv sync` will create and manage the virtual environment automatically, usually in `.venv`.
+
+You only need to manually create the virtual environment first if you have a specific reason, such as pinning a Python version before initializing:
+
+```bash
+uv venv --python 3.12
+uv init
+uv sync
+```
+
+For most projects, prefer:
+
+```bash
+uv init
+uv add <packages>
+```
+
+## What are the common `uv init` options / CLI flags and when should they be used?
+
+These options change what kind of project `uv init` creates.
+
+Usage: uv init [OPTIONS] [PATH]
+
+> **Tip:** `uv init --help` is a useful command to understand which [OPTIONS] [PATH] should be used with uv init
+
+`uv init` by default creates an application project i.e. similar to `uv init --app`.
+
+### `--bare`
+
+Only creates a `pyproject.toml` file.
+
+Use this when you want the smallest possible project setup and do not want `uv` to create extra files like source files, README files, or other starter structure.
+
+```bash
+uv init --bare
+```
+
+### `--package`
+
+Sets up the project so it can be built as a Python package.
+
+Use this when you want your project to be installable/buildable, for example as a wheel (`.whl`) or source distribution (`.tar.gz`).
+
+```bash
+uv init --package
+```
+
+### `--no-package`
+
+Does not set up the project to be built as a Python package.
+
+Use this when the project is only meant to be run locally as an application or script, and you do not need packaging/build configuration.
+
+```bash
+uv init --no-package
+```
+
+### `--app`
+
+Creates a project for an application.
+
+Use this when you are building something meant to be run directly, such as a CLI tool, API server, MCP server, automation script, or app.
+
+```bash
+uv init --app
+```
+
+### `--lib`
+
+Creates a project for a library.
+
+Use this when you are building reusable Python code that other Python code will import.
+
+```bash
+uv init --lib
+```
+
+### `--script`
+
+Creates a Python script.
+
+Use this when you want a single-file Python script instead of a full project folder.
+
+```bash
+uv init --script example.py
+```
