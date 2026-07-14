@@ -46,13 +46,21 @@ touch tinydb_remote_server.py
 ## Step 4: Add the MCP boilerplate code
 
 ```python
-// MCP BoilerPlate Code
-
+# MCP BoilerPlate Code
+import os
 from mcp.server.fastmcp import FastMCP
 
-mcp = FastMCP('tinydb-remote-mcp')
+# For Local MCP
+# mcp = FastMCP("tinydb-mcp")
 
-@mcp.too()
+# For Remote MCP hosted on a platform
+mcp = FastMCP(
+    "tinydb-remote-mcp",
+    host="0.0.0.0",
+    port=int(os.environ.get("PORT", "10000")),
+)
+
+@mcp.tool()
 def say_hello(name:str) -> str:
     """
     A simple MCP tool to print 'Hello <name>!', consistent greeting.
@@ -67,8 +75,14 @@ def say_hello(name:str) -> str:
     return f'Hello {name}!'
 
 if __name__ == "__main__":
-    mcp.run(transport='sreammable-http')
+    mcp.run(transport="streamable-http")
 ```
+
+For a remote MCP server, its HTTP process must bind to a network interface and
+port that the hosting platform can reach. `0.0.0.0` accepts external traffic.
+Using the `PORT` environment variable is not required for every deployment,
+but is the common convention for managed web hosts; each host supplies or
+documents its own port. The `10000` value is only a local fallback.
 
 ## Step 5: Add the tools, resources and prompts to the MCP
 
@@ -138,3 +152,48 @@ The `gh repo create` command creates the repository under the `AIMadeSimple`
 organization, configures it as the local `origin` remote, and pushes the
 current `main` branch. The explicit `git add` list avoids committing local
 environment files or the runtime TinyDB database.
+
+## Step 7: Deploy the Remote MCP on Render
+
+In the Render Dashboard, select **New > Web Service**, choose the
+`AIMadeSimple/TinyDB-MCP` repository and the `main` branch, and select the
+Python runtime. Use these commands:
+
+```bash
+# Build Command
+uv sync --frozen && uv cache prune --ci
+
+# Start Command
+uv run --frozen python tinydb_remote_server.py
+```
+
+Choose the Free instance type and create the service. Render provides `PORT`
+(default `10000`), which the server reads automatically; do not set it
+manually. `--frozen` installs/runs exactly the locked dependencies, while
+`--ci` removes uv's cache after the build. Render redeploys automatically
+after later pushes to `main`.
+
+TinyDB writes to `db.json` on the service filesystem. On a Free service this
+data is ephemeral and can be lost after a restart or redeploy. This server is
+also public and currently unauthenticated, so do not store sensitive data.
+
+## Step 8: Using MCP Inspector
+
+After the deploy is live, start MCP Inspector locally:
+
+```bash
+npx @modelcontextprotocol/inspector
+```
+
+Open the displayed local URL, select the **Streamable HTTP** transport, and
+enter the remote endpoint:
+
+```text
+https://<render-service-name>.onrender.com/mcp
+```
+
+To list the available tools without the Inspector UI, use its CLI mode:
+
+```bash
+npx @modelcontextprotocol/inspector --cli https://<render-service-name>.onrender.com/mcp --transport http --method tools/list
+```

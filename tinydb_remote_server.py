@@ -1,8 +1,14 @@
+import os
+from typing import Dict, List
+
 from mcp.server.fastmcp import FastMCP
 from tinydb import TinyDB
-from typing import List, Dict
 
-mcp = FastMCP('tinydb-remote-mcp')
+mcp = FastMCP(
+    "tinydb-remote-mcp",
+    host="0.0.0.0",
+    port=int(os.environ.get("PORT", "10000")),
+)
 
 db = TinyDB('db.json')
 
