@@ -47,6 +47,16 @@ examples when an interface changes. The public GitHub remote is
 `AIMadeSimple/TinyDB-MCP`; push reviewed changes to `main` with `git push`.
 Render deploys from `main` using the commands documented in `NOTES.md`.
 
+### GitHub Authentication and Commit Permissions
+
+Before committing or pushing, verify GitHub CLI authentication with
+`gh auth status`. If the token is invalid, refresh it with
+`gh auth refresh -h github.com` and complete the device-login flow before
+retrying. In sandboxed agent environments, Git may fail to create
+`.git/index.lock` with an “Operation not permitted” error. Request elevated
+permission for the intended `git add`, `git commit`, and `git push` command;
+do not remove lock files unless a stale lock has been confirmed.
+
 ## Security and Data
 
 Never commit `.env` files, credentials, or `db.json`. The current Render
