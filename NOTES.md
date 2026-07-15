@@ -19,7 +19,7 @@ uv init --bare
 
 Use `--bare` to create the smallest possible project, avoiding extra starter files like source code or a README. We do not use `--script` because it manages dependencies within a single Python file and uses a cached virtual environment instead of creating a project-specific virtual environment with `pyproject.toml` and `uv.lock`. The `--bare` flag gives us a minimal project while still benefiting from `uv`'s dependency management and local virtual environment.
 
-## Step 2: Add Dependencies
+## Step 2: Add dependencies
 
 Add the dependencies
 
@@ -223,6 +223,27 @@ npx @modelcontextprotocol/inspector --cli https://<render-service-name>.onrender
 
 Use test data only: this server is public and unauthenticated.
 
+## Step 10: Create a README.md file
+
+The README.md file should contain a basic overview of this project.
+
+This is a simple project to help people understand how to create and use MCP servers. I didn't find a super detailed repository that walks people through how to create and connect to an MCP server hence I have created this repository.
+
+The detailed Steps for how to create an MCP are in NOTES.md file.
+
+What does this MCP do?
+
+How to use the MCP?
+
+With MCP Inspector
+
+With OpenAI Web App
+
+With Codex
+
+With Claude Web App
+
+With Claude Code
 
 # FAQs
 
